@@ -12,7 +12,9 @@
 
 #==============================================================
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  state = "available"
+}
 
 resource "aws_vpc" "cloudx" {
   cidr_block           = "10.10.0.0/16"
@@ -75,6 +77,34 @@ resource "aws_route_table_association" "public_rta" {
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_subnet" "private_subnet_db" {
+  for_each = var.private_subnet_data
+
+  vpc_id                  = aws_vpc.cloudx.id
+  cidr_block              = each.value["cidr"]
+  availability_zone       = each.value["az"]
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = each.value["name"]
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.cloudx.id
+
+  tags = {
+    Name = "${var.env}-cloudx-private_rt"
+  }
+}
+
+resource "aws_route_table_association" "private_rta" {
+  for_each = aws_subnet.private_subnet_db
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private_rt.id
 }
 
 

@@ -6,7 +6,11 @@ data "aws_iam_policy_document" "ghost_app_policy_doc" {
       "ec2:Describe*",
       "elasticfilesystem:DescribeFileSystems",
       "elasticfilesystem:ClientMount",
-      "elasticfilesystem:ClientWrite"
+      "elasticfilesystem:ClientWrite",
+      "ssm:GetParameter*",
+      "secretsmanager:GetSecretValue",
+      "kms:Decrypt"
+
     ]
 
     resources = ["*"]

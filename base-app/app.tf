@@ -67,8 +67,15 @@ resource "aws_launch_template" "ghost" {
   key_name               = "ghost-ec2-pool"
   update_default_version = true
   user_data = base64encode(templatefile("user_data.sh.tpl", {
-    LB_DNS_NAME = aws_lb.ghost_alb.dns_name
+    LB_DNS_NAME     = aws_lb.ghost_alb.dns_name
+    DB_URL          = aws_db_instance.ghost.address
+    DB_USER         = aws_db_instance.ghost.username
+    DB_PASSWORD     = data.aws_ssm_parameter.my_rds_password.value
+    DB_NAME         = aws_db_instance.ghost.db_name
+    SSM_DB_PASSWORD = aws_ssm_parameter.rds_password.name
   })) #base64encode(file("user_data.sh.tpl"))
+
+  depends_on = [aws_db_instance.ghost]
 }
 
 resource "aws_autoscaling_group" "ghost_ec2_pool" {
