@@ -6,6 +6,10 @@ variable "env" {
   default = "prod"
 }
 
+variable "region" {
+  default = "us-east-1"
+}
+
 # variable "public_subnet_cidrs" {
 #   default = [
 #     "10.10.1.0/24",
@@ -49,6 +53,25 @@ variable "private_subnet_data" {
     "subnet_c" : {
       "name" : "private_db_c"
       "cidr" : "10.10.22.0/24"
+      "az" : "us-east-1c"
+    }
+  }
+}
+variable "private_subnet_ecs_data" {
+  default = {
+    "subnet_ecs_a" : {
+      "name" : "private_ecs_a"
+      "cidr" : "10.10.10.0/24"
+      "az" : "us-east-1a"
+    }
+    "subnet_ecs_b" : {
+      "name" : "private_ecs_b"
+      "cidr" : "10.10.11.0/24"
+      "az" : "us-east-1b"
+    }
+    "subnet_ecs_c" : {
+      "name" : "private_ecs_c"
+      "cidr" : "10.10.12.0/24"
       "az" : "us-east-1c"
     }
   }

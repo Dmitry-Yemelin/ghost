@@ -49,9 +49,21 @@ resource "aws_lb_listener" "http_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.ghost_ec2.arn
+    type = "forward"
+
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.ghost_ec2.arn
+        weight = 100
+      }
+      target_group {
+        arn    = aws_lb_target_group.ghost_fargate.arn
+        weight = 100
+      }
+    }
+
   }
+
 }
 
 

@@ -88,6 +88,12 @@ resource "aws_security_group" "efs" {
     protocol        = "tcp"
     security_groups = [aws_security_group.ec2_pool.id]
   }
+  ingress {
+    from_port       = 2049
+    to_port         = 2049
+    protocol        = "tcp"
+    security_groups = [aws_security_group.fargate_pool.id]
+  }
 
   egress {
     from_port   = 0
@@ -108,6 +114,12 @@ resource "aws_security_group" "mysql" {
     protocol        = "tcp"
     security_groups = [aws_security_group.ec2_pool.id]
   }
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.fargate_pool.id]
+  }
 
   egress {
     from_port   = 0
@@ -118,5 +130,70 @@ resource "aws_security_group" "mysql" {
 
   tags = {
     Name = "mysql"
+  }
+}
+resource "aws_security_group" "fargate_pool" {
+  name        = "fargate_pool"
+  description = "Allows access for Fargate instances"
+  vpc_id      = aws_vpc.cloudx.id
+
+  ingress {
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.cloudx.cidr_block] #possibly use "0.0.0.0/0" if efs is not mounted properly
+  }
+  ingress {
+    from_port       = 2368
+    to_port         = 2368
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "fargate"
+  }
+}
+
+
+resource "aws_security_group" "vpc_endpoint_sg" {
+  name        = "vpc_endpoint"
+  description = "Security group for VPC endpoints"
+  vpc_id      = aws_vpc.cloudx.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [aws_vpc.cloudx.cidr_block]
+  }
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.fargate_pool.id]
+  }
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "vpc_endpoints"
   }
 }
