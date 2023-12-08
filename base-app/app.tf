@@ -103,8 +103,8 @@ resource "aws_autoscaling_group" "ghost_ec2_pool" {
   }
 
   # Desired, Min and Max configuration (adjust as necessary)
-  desired_capacity = 1
-  min_size         = 1
+  desired_capacity = 2
+  min_size         = 2
   max_size         = 3
 
   # Target Group Attachment
@@ -114,6 +114,12 @@ resource "aws_autoscaling_group" "ghost_ec2_pool" {
   health_check_type         = "EC2"
   force_delete              = true
   wait_for_capacity_timeout = "0"
+
+  tag {
+    key                 = "Name"
+    value               = "${aws_launch_template.ghost.name}-${aws_launch_template.ghost.id}"
+    propagate_at_launch = true
+  }
 }
 
 
