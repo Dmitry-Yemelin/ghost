@@ -103,8 +103,8 @@ resource "aws_autoscaling_group" "ghost_ec2_pool" {
   }
 
   # Desired, Min and Max configuration (adjust as necessary)
-  desired_capacity = 2
-  min_size         = 2
+  desired_capacity = 1
+  min_size         = 1
   max_size         = 3
 
   # Target Group Attachment
